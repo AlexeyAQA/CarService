@@ -3,6 +3,7 @@ package com.example.car_service.service.impl;
 import com.example.car_service.domain.dto.owner.*;
 import com.example.car_service.domain.entity.OwnerEntity;
 import com.example.car_service.exception.OwnerBusinessException;
+import com.example.car_service.exception.OwnerNotFoundException;
 import com.example.car_service.mapper.OwnerMapper;
 import com.example.car_service.repository.OwnerRepository;
 import com.example.car_service.service.OwnerService;
@@ -10,7 +11,6 @@ import com.example.car_service.util.OwnerSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,17 +41,14 @@ public class OwnerServiceImpl implements OwnerService {
                 .build();
 
         try {
-            throw new DataAccessResourceFailureException("Ошибка БД");
-
-         //   owner = repository.saveAndFlush(owner);
-        } catch (RuntimeException e) {
-            log.error("Здесь выпала ошибка: {}", e.getMessage(), e);
+            owner = repository.saveAndFlush(owner);
+        } catch (DataAccessException e) {
+            log.error("Не удалось сохранить владельца", e);
             throw new OwnerBusinessException("Ошибка взаимодействия с БД");
         }
 
-       // log.debug("Сущность создана: {}", owner.getId());
-
-      //  return ownerMapper.toDto(owner);
+        log.debug("Сущность создана: {}", owner.getId());
+        return ownerMapper.toDto(owner);
     }
 
     @Override
@@ -66,14 +63,17 @@ public class OwnerServiceImpl implements OwnerService {
     @Transactional(readOnly = true)
     public OwnerPageResponse findWithFilter(OwnerSearchRequest filter) {
 
+        String sortProperty = "updatedAt".equals(filter.sortBy())
+                ? "recordUpdatedAt" : filter.sortBy();
         Pageable pageable = PageRequest.of(
                 filter.page(),
                 filter.size(),
                 Sort.by(Sort.Direction.fromString(filter.direction()),
-                        filter.sortBy())
+                        sortProperty)
         );
 
         Specification<OwnerEntity> specification = OwnerSpecification.ownerSpecification(
+                filter.fullName(),
                 filter.owners(),
                 filter.phone(),
                 filter.email(),
@@ -159,13 +159,11 @@ public class OwnerServiceImpl implements OwnerService {
 
     private OwnerEntity getActiveOwnerEntityById(UUID id) {
         return repository.findByIdAndDeletedAtIsNull(id)
-                .orElseThrow( () ->
-                        new RuntimeException("Owner with provided id:" + id + " not found"));
+                .orElseThrow(() -> new OwnerNotFoundException(id));
     }
 
     private OwnerEntity getOwnerEntityByIdIncludingDeleted(UUID id) {
         return repository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Owner with provided id: " + id + " not found"));
+                .orElseThrow(() -> new OwnerNotFoundException(id));
     }
 }

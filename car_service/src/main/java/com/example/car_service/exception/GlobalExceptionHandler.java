@@ -12,6 +12,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(OwnerNotFoundException.class)
+    public ResponseEntity<ErrorDto> handleException(OwnerNotFoundException e) {
+        ErrorDto dto = new ErrorDto(HttpStatus.NOT_FOUND.value(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dto);
+    }
+
     @ExceptionHandler(OwnerBusinessException.class)
     public ResponseEntity<ErrorDto> handleException(OwnerBusinessException e) {
 
