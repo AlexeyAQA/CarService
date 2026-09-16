@@ -2,11 +2,16 @@ package com.example.car_service.service.impl;
 
 import com.example.car_service.domain.dto.owner.*;
 import com.example.car_service.domain.entity.OwnerEntity;
+import com.example.car_service.exception.OwnerBusinessException;
+import com.example.car_service.exception.OwnerConflictException;
+import com.example.car_service.exception.OwnerNotFoundException;
 import com.example.car_service.mapper.OwnerMapper;
 import com.example.car_service.repository.OwnerRepository;
 import com.example.car_service.service.OwnerService;
 import com.example.car_service.util.OwnerSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +25,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OwnerServiceImpl implements OwnerService {
 
     private final OwnerRepository repository;
@@ -35,9 +41,15 @@ public class OwnerServiceImpl implements OwnerService {
                 .email(request.email())
                 .build();
 
-        OwnerEntity saved = repository.saveAndFlush(owner);
+        try {
+            owner = repository.saveAndFlush(owner);
+        } catch (DataAccessException e) {
+            log.error("Не удалось сохранить владельца", e);
+            throw new OwnerBusinessException("Ошибка взаимодействия с БД");
+        }
 
-        return ownerMapper.toDto(saved);
+        log.debug("Сущность создана: {}", owner.getId());
+        return ownerMapper.toDto(owner);
     }
 
     @Override
@@ -52,14 +64,17 @@ public class OwnerServiceImpl implements OwnerService {
     @Transactional(readOnly = true)
     public OwnerPageResponse findWithFilter(OwnerSearchRequest filter) {
 
+        String sortProperty = "updatedAt".equals(filter.sortBy())
+                ? "recordUpdatedAt" : filter.sortBy();
         Pageable pageable = PageRequest.of(
                 filter.page(),
                 filter.size(),
                 Sort.by(Sort.Direction.fromString(filter.direction()),
-                        filter.sortBy())
+                        sortProperty)
         );
 
         Specification<OwnerEntity> specification = OwnerSpecification.ownerSpecification(
+                filter.fullName(),
                 filter.owners(),
                 filter.phone(),
                 filter.email(),
@@ -127,31 +142,29 @@ public class OwnerServiceImpl implements OwnerService {
 
     private static void checkOwnerHasCars(OwnerEntity owner) {
         if (!owner.getCars().isEmpty()) {
-            throw new RuntimeException("Owner with linked cars cannot be deleted");
+            throw new OwnerConflictException("Owner with linked cars cannot be deleted");
         }
     }
 
     private static void checkOwnerCanBeSoftDeleted(UUID id, OwnerEntity owner) {
         if (owner.getDeletedAt() != null) {
-            throw new RuntimeException("Owner with provided id " + id + " is already deleted");
+            throw new OwnerConflictException("Owner with provided id " + id + " is already deleted");
         }
     }
 
     private static void checkOwnerCanBeRestored(UUID id, OwnerEntity owner) {
         if (owner.getDeletedAt() == null) {
-            throw new RuntimeException("Owner with provided id " + id + " is not deleted");
+            throw new OwnerConflictException("Owner with provided id " + id + " is not deleted");
         }
     }
 
     private OwnerEntity getActiveOwnerEntityById(UUID id) {
         return repository.findByIdAndDeletedAtIsNull(id)
-                .orElseThrow( () ->
-                        new RuntimeException("Owner with provided id:" + id + " not found"));
+                .orElseThrow(() -> new OwnerNotFoundException(id));
     }
 
     private OwnerEntity getOwnerEntityByIdIncludingDeleted(UUID id) {
         return repository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Owner with provided id: " + id + " not found"));
+                .orElseThrow(() -> new OwnerNotFoundException(id));
     }
 }
