@@ -3,6 +3,7 @@ package com.example.car_service.service.impl;
 import com.example.car_service.domain.dto.owner.*;
 import com.example.car_service.domain.entity.OwnerEntity;
 import com.example.car_service.exception.OwnerBusinessException;
+import com.example.car_service.exception.OwnerConflictException;
 import com.example.car_service.exception.OwnerNotFoundException;
 import com.example.car_service.mapper.OwnerMapper;
 import com.example.car_service.repository.OwnerRepository;
@@ -141,19 +142,19 @@ public class OwnerServiceImpl implements OwnerService {
 
     private static void checkOwnerHasCars(OwnerEntity owner) {
         if (!owner.getCars().isEmpty()) {
-            throw new RuntimeException("Owner with linked cars cannot be deleted");
+            throw new OwnerConflictException("Owner with linked cars cannot be deleted");
         }
     }
 
     private static void checkOwnerCanBeSoftDeleted(UUID id, OwnerEntity owner) {
         if (owner.getDeletedAt() != null) {
-            throw new RuntimeException("Owner with provided id " + id + " is already deleted");
+            throw new OwnerConflictException("Owner with provided id " + id + " is already deleted");
         }
     }
 
     private static void checkOwnerCanBeRestored(UUID id, OwnerEntity owner) {
         if (owner.getDeletedAt() == null) {
-            throw new RuntimeException("Owner with provided id " + id + " is not deleted");
+            throw new OwnerConflictException("Owner with provided id " + id + " is not deleted");
         }
     }
 

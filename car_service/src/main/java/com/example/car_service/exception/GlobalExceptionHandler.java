@@ -18,6 +18,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dto);
     }
 
+    @ExceptionHandler(OwnerConflictException.class)
+    public ResponseEntity<ErrorDto> handleException(OwnerConflictException e) {
+        ErrorDto dto = new ErrorDto(HttpStatus.CONFLICT.value(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(dto);
+    }
+
     @ExceptionHandler(OwnerBusinessException.class)
     public ResponseEntity<ErrorDto> handleException(OwnerBusinessException e) {
 
