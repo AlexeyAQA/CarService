@@ -1,0 +1,2 @@
+ALTER TABLE cars
+    ADD COLUMN record_deleted_at TIMESTAMP WITH TIME ZONE;

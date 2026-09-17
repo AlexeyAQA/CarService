@@ -40,3 +40,13 @@ databaseChangeLog:
         relativeToChangelogFile: true
         splitStatements: true
         endDelimiter: ;
+
+  - changeSet:
+      id: 2026_09_17_v3_alter_cars_add_deleted_at.sql
+      author: alexey
+      comment: "field deleted_at added to cars table for soft delete impl"
+      sqlFile:
+        path: dbscripts/2026_09_17_v3_alter_cars_add_deleted_at.sql
+        relativeToChangelogFile: true
+        splitStatements: true
+        endDelimiter: ;
