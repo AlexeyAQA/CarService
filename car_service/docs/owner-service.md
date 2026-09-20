@@ -16,7 +16,7 @@
 | `DELETE` | `/{id}/admin` | Физически удалить владельца | `204 No Content`, без тела |
 | `PATCH` | `/{id}/restore` | Восстановить мягко удалённого владельца | `204 No Content`, без тела |
 
-`OwnerResponse` содержит `id`, `fullName`, `phone`, `email`, `cars`, `createdAt`, `updatedAt`. Даты владельца имеют формат `HH:mm - dd.MM.yyyy`, например `14:30 - 16.09.2026`. У нового владельца `cars` — пустой массив. Автомобили представлены через [CarResponse](../src/main/java/com/example/car_service/domain/dto/car/CarResponse.java), без обратной ссылки на владельца и списка обслуживаний.
+`OwnerResponse` содержит `id`, `fullName`, `phone`, `email`, `cars`, `createdAt`, `updatedAt`. Даты владельца имеют формат `HH:mm - dd.MM.yyyy`, например `14:30 - 16.09.2026`. У нового владельца `cars` — пустой массив. Вложенные автомобили представлены сокращённой моделью [CarSummaryResponse](../src/main/java/com/example/car_service/domain/dto/car/CarSummaryResponse.java), а не полной моделью `CarResponse`. Она содержит только `id`, `vin`, `regNumber`, `manufacturer` и `model`, без обратной ссылки на владельца, пробега, дат и списка обслуживаний.
 
 `OwnerPageResponse` содержит массив `owners`, номер страницы `page`, размер страницы `size`, общее количество подходящих владельцев `totalElements` и страниц `totalPages`. Поиск без совпадений возвращает `200` и пустой массив `owners`.
 

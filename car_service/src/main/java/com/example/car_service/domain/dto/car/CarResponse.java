@@ -4,7 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public record CarResponse(
-        UUID id,
+        UUID ownerId,
         String vin,
         String regNumber,
         Integer year,

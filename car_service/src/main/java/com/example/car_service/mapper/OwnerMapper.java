@@ -14,8 +14,6 @@ public interface OwnerMapper {
     @Mapping(target = "updatedAt", source = "recordUpdatedAt")
     OwnerResponse toDto(OwnerEntity entity);
 
-    CarResponse toCarDto(CarEntity entity);
-
     @BeanMapping(
             nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
     )

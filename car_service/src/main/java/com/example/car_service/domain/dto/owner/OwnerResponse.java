@@ -1,6 +1,6 @@
 package com.example.car_service.domain.dto.owner;
 
-import com.example.car_service.domain.dto.car.CarResponse;
+import com.example.car_service.domain.dto.car.CarSummaryResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 
@@ -19,7 +19,7 @@ public record OwnerResponse(
 
         String email,
 
-        List<CarResponse> cars,
+        List<CarSummaryResponse> cars,
 
         @JsonFormat(pattern = "HH:mm - dd.MM.yyyy")
         ZonedDateTime createdAt,
