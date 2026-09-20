@@ -1,10 +1,8 @@
 package com.example.car_service.mapper;
 
-import com.example.car_service.domain.dto.car.CarResponse;
 import com.example.car_service.domain.dto.owner.OwnerResponse;
 import com.example.car_service.domain.dto.owner.OwnerUpdateRequest;
 import com.example.car_service.domain.entity.OwnerEntity;
-import com.example.car_service.domain.entity.CarEntity;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
