@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,7 +49,7 @@ public class CarEntity {
     private OwnerEntity owner;
 
     @OneToMany(mappedBy = "car")
-    private List<MaintenanceRecordEntity> services;
+    private List<MaintenanceRecordEntity> services = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -57,4 +58,7 @@ public class CarEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
+
+    @Column(name = "record_deleted_at")
+    private ZonedDateTime deletedAt;
 }

@@ -4,13 +4,14 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public record CarResponse(
-        UUID ownerId,
+        UUID id,
         String vin,
         String regNumber,
         Integer year,
         Integer mileage,
         String manufacturer,
         String model,
+        UUID ownerId,
         ZonedDateTime createdAt,
         ZonedDateTime updatedAt
 ) {
