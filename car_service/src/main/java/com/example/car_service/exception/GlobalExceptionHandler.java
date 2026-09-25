@@ -1,6 +1,11 @@
 package com.example.car_service.exception;
 
 import com.example.car_service.domain.dto.owner.ErrorDto;
+import com.example.car_service.exception.car.CarConflictException;
+import com.example.car_service.exception.car.CarNotFoundException;
+import com.example.car_service.exception.owner.OwnerBusinessException;
+import com.example.car_service.exception.owner.OwnerConflictException;
+import com.example.car_service.exception.owner.OwnerNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +35,6 @@ public class GlobalExceptionHandler {
         ErrorDto dto = new ErrorDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
 
         return ResponseEntity.status(dto.statusCode()).body(dto);
-
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -39,7 +43,22 @@ public class GlobalExceptionHandler {
         ErrorDto dto = new ErrorDto(HttpStatus.BAD_REQUEST.value(), e.getMessage());
 
         return ResponseEntity.status(dto.statusCode()).body(dto);
+    }
 
+    @ExceptionHandler(CarNotFoundException.class)
+    public ResponseEntity<ErrorDto> handleException(CarNotFoundException e) {
+
+        ErrorDto dto = new ErrorDto(HttpStatus.NOT_FOUND.value(), e.getMessage());
+
+        return ResponseEntity.status(dto.statusCode()).body(dto);
+    }
+
+    @ExceptionHandler(CarConflictException.class)
+    public ResponseEntity<ErrorDto> handleException(CarConflictException e) {
+
+        ErrorDto dto = new ErrorDto(HttpStatus.CONFLICT.value(), e.getMessage());
+
+        return ResponseEntity.status(dto.statusCode()).body(dto);
     }
 
 }

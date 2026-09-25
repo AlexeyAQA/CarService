@@ -2,9 +2,9 @@ package com.example.car_service.service.impl;
 
 import com.example.car_service.domain.dto.owner.*;
 import com.example.car_service.domain.entity.OwnerEntity;
-import com.example.car_service.exception.OwnerBusinessException;
-import com.example.car_service.exception.OwnerConflictException;
-import com.example.car_service.exception.OwnerNotFoundException;
+import com.example.car_service.exception.owner.OwnerBusinessException;
+import com.example.car_service.exception.owner.OwnerConflictException;
+import com.example.car_service.exception.owner.OwnerNotFoundException;
 import com.example.car_service.mapper.OwnerMapper;
 import com.example.car_service.repository.OwnerRepository;
 import com.example.car_service.service.OwnerService;
