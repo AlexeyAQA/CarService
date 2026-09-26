@@ -1,8 +1,6 @@
 package com.example.car_service.service.impl;
 
-import com.example.car_service.domain.dto.car.CarCreateRequest;
-import com.example.car_service.domain.dto.car.CarResponse;
-import com.example.car_service.domain.dto.car.CarUpdateRequest;
+import com.example.car_service.domain.dto.car.*;
 import com.example.car_service.domain.entity.CarEntity;
 import com.example.car_service.domain.entity.OwnerEntity;
 import com.example.car_service.exception.car.CarBusinessException;
@@ -13,9 +11,15 @@ import com.example.car_service.mapper.CarMapper;
 import com.example.car_service.repository.CarRepository;
 import com.example.car_service.repository.OwnerRepository;
 import com.example.car_service.service.CarService;
+import com.example.car_service.util.CarSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,6 +84,33 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public CarPageResponse findWithFilter(CarSearchRequest filter) {
+
+        String sortProperty = filter.sortBy();
+        Pageable pageable = PageRequest.of(
+                filter.page(),
+                filter.size(),
+                Sort.by(Sort.Direction.fromString(filter.direction()),
+                        sortProperty)
+        );
+
+        Specification<CarEntity> specification = CarSpecification.carSpecification(
+                filter
+        );
+
+        Page<CarEntity> carsPage = carRepository.findAll(specification, pageable);
+
+        return new CarPageResponse(
+                carsPage.getContent().stream().map(carMapper::toDto).toList(),
+                carsPage.getNumber(),
+                carsPage.getSize(),
+                carsPage.getTotalElements(),
+                carsPage.getTotalPages()
+        );
+    }
+
+    @Override
     @Transactional
     public CarResponse updateCarById(UUID id, CarUpdateRequest updateRequest) {
 
@@ -139,9 +170,8 @@ public class CarServiceImpl implements CarService {
     }
 
     private CarEntity getActiveCarEntityById(UUID id) {
-        CarEntity car = carRepository.findByIdAndDeletedAtIsNull(id)
+        return carRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new CarNotFoundException(id));
-        return car;
     }
 
     private static void checkCarYearNotBiggerThanCurrent(CarCreateRequest request) {
