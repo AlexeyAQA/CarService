@@ -46,7 +46,7 @@ public class CarEntity {
     @JoinColumn(name = "owner_id", nullable = false)
     private OwnerEntity owner;
 
-    @OneToMany(mappedBy = "car")
+    @OneToMany(mappedBy = "car", cascade = CascadeType.REMOVE)
     @Builder.Default
     private List<MaintenanceRecordEntity> services = new ArrayList<>();
 

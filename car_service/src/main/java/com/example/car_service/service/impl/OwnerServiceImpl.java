@@ -45,7 +45,7 @@ public class OwnerServiceImpl implements OwnerService {
             owner = repository.saveAndFlush(owner);
         } catch (DataAccessException e) {
             log.error("Не удалось сохранить владельца", e);
-            throw new OwnerBusinessException("Ошибка взаимодействия с БД");
+            throw new OwnerBusinessException("Не удалось сохранить владельца из-за ошибки базы данных");
         }
 
         log.debug("Сущность создана: {}", owner.getId());
@@ -142,19 +142,19 @@ public class OwnerServiceImpl implements OwnerService {
 
     private static void checkOwnerHasCars(OwnerEntity owner) {
         if (!owner.getCars().isEmpty()) {
-            throw new OwnerConflictException("Owner with linked cars cannot be deleted");
+            throw new OwnerConflictException("Нельзя удалить владельца, пока за ним закреплены автомобили");
         }
     }
 
     private static void checkOwnerCanBeSoftDeleted(UUID id, OwnerEntity owner) {
         if (owner.getDeletedAt() != null) {
-            throw new OwnerConflictException("Owner with provided id " + id + " is already deleted");
+            throw new OwnerConflictException("Владелец с ID " + id + " уже помечен как удалённый");
         }
     }
 
     private static void checkOwnerCanBeRestored(UUID id, OwnerEntity owner) {
         if (owner.getDeletedAt() == null) {
-            throw new OwnerConflictException("Owner with provided id " + id + " is not deleted");
+            throw new OwnerConflictException("Владелец с ID " + id + " не удалён и не нуждается в восстановлении");
         }
     }
 
