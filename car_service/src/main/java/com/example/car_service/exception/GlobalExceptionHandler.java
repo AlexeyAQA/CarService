@@ -1,6 +1,7 @@
 package com.example.car_service.exception;
 
 import com.example.car_service.domain.dto.owner.ErrorDto;
+import com.example.car_service.exception.car.CarBusinessException;
 import com.example.car_service.exception.car.CarConflictException;
 import com.example.car_service.exception.car.CarNotFoundException;
 import com.example.car_service.exception.owner.OwnerBusinessException;
@@ -57,6 +58,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDto> handleException(CarConflictException e) {
 
         ErrorDto dto = new ErrorDto(HttpStatus.CONFLICT.value(), e.getMessage());
+
+        return ResponseEntity.status(dto.statusCode()).body(dto);
+    }
+
+    @ExceptionHandler(CarBusinessException.class)
+    public ResponseEntity<ErrorDto> handleException(CarBusinessException e) {
+
+        ErrorDto dto = new ErrorDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
 
         return ResponseEntity.status(dto.statusCode()).body(dto);
     }

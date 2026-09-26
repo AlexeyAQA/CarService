@@ -1,10 +1,7 @@
 package com.example.car_service.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -19,6 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "cars")
+@Builder
 public class CarEntity {
 
     @Id
@@ -49,6 +47,7 @@ public class CarEntity {
     private OwnerEntity owner;
 
     @OneToMany(mappedBy = "car")
+    @Builder.Default
     private List<MaintenanceRecordEntity> services = new ArrayList<>();
 
     @CreationTimestamp
