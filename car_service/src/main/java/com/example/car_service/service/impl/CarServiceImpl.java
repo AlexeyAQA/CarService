@@ -169,6 +169,25 @@ public class CarServiceImpl implements CarService {
 
     }
 
+    @Transactional
+    @Override
+    public void restoreCarById(UUID id) {
+
+        CarEntity car = carRepository.findById(id)
+                .orElseThrow(() ->
+                        new CarNotFoundException(id));
+        if (car.getDeletedAt() == null) {
+            throw new CarConflictException("Автомобиль уже активен и не нуждается в восстановлении");
+        }
+        UUID ownerId = car.getOwner().getId();
+
+        ownerRepository.findByIdAndDeletedAtIsNull(ownerId).orElseThrow(
+                ()-> new OwnerNotFoundException(ownerId)
+        );
+
+        car.setDeletedAt(null);
+    }
+
     private CarEntity getActiveCarEntityById(UUID id) {
         return carRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new CarNotFoundException(id));

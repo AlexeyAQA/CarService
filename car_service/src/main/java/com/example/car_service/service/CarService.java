@@ -17,4 +17,6 @@ public interface CarService {
     void hardDeleteCarById(UUID id);
 
     void softDeleteCarById(UUID id);
+
+    void restoreCarById(UUID id);
 }
