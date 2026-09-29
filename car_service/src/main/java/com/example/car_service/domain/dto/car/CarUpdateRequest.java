@@ -21,14 +21,14 @@ public record CarUpdateRequest(
 
         @Pattern(
                 regexp = "(?s).*\\S.*",
-                message = "Model must not be blank"
+                message = "Manufacturer must not be blank"
         )
         @Size(max = 100, message = "Manufacturer must not exceed 100 characters")
         String manufacturer,
 
         @Pattern(
                 regexp = "(?s).*\\S.*",
-                message = "Manufacturer must not be blank"
+                message = "Model must not be blank"
         )
         @Size(max = 100, message = "Model must not exceed 100 characters")
         String model,

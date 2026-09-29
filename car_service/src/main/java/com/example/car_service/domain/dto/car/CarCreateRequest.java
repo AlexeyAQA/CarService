@@ -13,6 +13,10 @@ public record CarCreateRequest(
         )
         String vin,
 
+        @Pattern(
+                regexp = "(?s).*\\S.*",
+                message = "Registration number must not be blank"
+        )
         @Size(max = 20, message = "Registration number must not exceed 20 characters")
         String regNumber,
 
