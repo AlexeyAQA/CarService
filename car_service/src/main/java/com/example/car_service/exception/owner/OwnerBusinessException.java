@@ -1,4 +1,4 @@
-package com.example.car_service.exception;
+package com.example.car_service.exception.owner;
 
 public class OwnerBusinessException extends RuntimeException {
 

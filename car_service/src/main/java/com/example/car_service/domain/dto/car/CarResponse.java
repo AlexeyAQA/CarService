@@ -11,6 +11,7 @@ public record CarResponse(
         Integer mileage,
         String manufacturer,
         String model,
+        UUID ownerId,
         ZonedDateTime createdAt,
         ZonedDateTime updatedAt
 ) {

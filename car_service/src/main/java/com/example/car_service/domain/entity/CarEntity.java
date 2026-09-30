@@ -1,14 +1,12 @@
 package com.example.car_service.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "cars")
+@Builder
 public class CarEntity {
 
     @Id
@@ -47,8 +46,9 @@ public class CarEntity {
     @JoinColumn(name = "owner_id", nullable = false)
     private OwnerEntity owner;
 
-    @OneToMany(mappedBy = "car")
-    private List<MaintenanceRecordEntity> services;
+    @OneToMany(mappedBy = "car", cascade = CascadeType.REMOVE)
+    @Builder.Default
+    private List<MaintenanceRecordEntity> services = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -57,4 +57,7 @@ public class CarEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
+
+    @Column(name = "record_deleted_at")
+    private ZonedDateTime deletedAt;
 }

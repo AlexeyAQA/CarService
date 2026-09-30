@@ -1,9 +1,9 @@
 package com.example.car_service.service;
 
 import com.example.car_service.domain.dto.owner.*;
-import com.example.car_service.exception.OwnerBusinessException;
-import com.example.car_service.exception.OwnerConflictException;
-import com.example.car_service.exception.OwnerNotFoundException;
+import com.example.car_service.exception.owner.OwnerBusinessException;
+import com.example.car_service.exception.owner.OwnerConflictException;
+import com.example.car_service.exception.owner.OwnerNotFoundException;
 
 import java.util.UUID;
 
