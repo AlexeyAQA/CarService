@@ -1,5 +1,6 @@
 package com.example.car_service.domain.entity;
 
+import com.example.car_service.domain.enums.PerformerType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -31,11 +35,22 @@ public class MaintenanceRecordEntity {
     @JoinColumn(name = "service_center_id")
     private ServiceCenterEntity serviceCenter;
 
+    @OneToMany(
+            mappedBy = "maintenanceRecord",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+    )
+    @OrderBy("position ASC")
+    private List<MaintenanceItemEntity> items = new ArrayList<>();
+
     @Column(name = "service_date", nullable = false)
-    private ZonedDateTime serviceDate;
+    private LocalDate serviceDate;
 
     @Column(name = "mileage")
     private Integer mileage;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "performer_type", nullable = false)
+    private PerformerType performerType;
 
     @Column(name = "description")
     private String description;
