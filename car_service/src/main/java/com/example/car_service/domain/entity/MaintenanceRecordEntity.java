@@ -8,7 +8,6 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ public class MaintenanceRecordEntity {
     @Column(name = "service_date", nullable = false)
     private LocalDate serviceDate;
 
-    @Column(name = "mileage")
+    @Column(name = "mileage", nullable = false)
     private Integer mileage;
 
     @Enumerated(EnumType.STRING)
@@ -54,9 +53,6 @@ public class MaintenanceRecordEntity {
 
     @Column(name = "description")
     private String description;
-
-    @Column(name = "cost")
-    private BigDecimal cost;
 
     @CreationTimestamp
     @Column(name = "created_at")

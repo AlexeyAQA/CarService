@@ -50,3 +50,30 @@ databaseChangeLog:
         relativeToChangelogFile: true
         splitStatements: true
         endDelimiter: ;
+  - changeSet:
+      id: 2026_10_02_v4_create_maintenance_items.sql
+      author: alexey
+      comment: "table maintenance_items created"
+      sqlFile:
+        path: dbscripts/2026_10_02_v4_create_maintenance_items.sql
+        relativeToChangelogFile: true
+        splitStatements: true
+        endDelimiter: ;
+  - changeSet:
+      id: 2026_10_02_v5_alter_car_services.sql
+      author: alexey
+      comment: "add performer type and change service date to DATE"
+      sqlFile:
+        path: dbscripts/2026_10_02_v5_alter_car_services.sql
+        relativeToChangelogFile: true
+        splitStatements: true
+        endDelimiter: ;
+  - changeSet:
+      id: 2026_10_03_v6_alter_car_services.sql
+      author: alexey
+      comment: "make maintenance mileage required"
+      sqlFile:
+        path: dbscripts/2026_10_03_v6_alter_car_services.sql
+        relativeToChangelogFile: true
+        splitStatements: true
+        endDelimiter: ;
