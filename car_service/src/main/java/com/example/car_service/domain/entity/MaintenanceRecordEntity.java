@@ -2,9 +2,7 @@ package com.example.car_service.domain.entity;
 
 import com.example.car_service.domain.enums.PerformerType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,8 +15,10 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "car_services")
+@Builder
 public class MaintenanceRecordEntity {
 
     @Id
