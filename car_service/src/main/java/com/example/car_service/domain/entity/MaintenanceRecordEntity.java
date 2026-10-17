@@ -1,21 +1,24 @@
 package com.example.car_service.domain.entity;
 
+import com.example.car_service.domain.enums.PerformerType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "car_services")
+@Builder
 public class MaintenanceRecordEntity {
 
     @Id
@@ -31,17 +34,25 @@ public class MaintenanceRecordEntity {
     @JoinColumn(name = "service_center_id")
     private ServiceCenterEntity serviceCenter;
 
-    @Column(name = "service_date", nullable = false)
-    private ZonedDateTime serviceDate;
+    @OneToMany(
+            mappedBy = "maintenanceRecord",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+    )
+    @OrderBy("position ASC")
+    private List<MaintenanceItemEntity> items = new ArrayList<>();
 
-    @Column(name = "mileage")
+    @Column(name = "service_date", nullable = false)
+    private LocalDate serviceDate;
+
+    @Column(name = "mileage", nullable = false)
     private Integer mileage;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "performer_type", nullable = false)
+    private PerformerType performerType;
 
     @Column(name = "description")
     private String description;
-
-    @Column(name = "cost")
-    private BigDecimal cost;
 
     @CreationTimestamp
     @Column(name = "created_at")
