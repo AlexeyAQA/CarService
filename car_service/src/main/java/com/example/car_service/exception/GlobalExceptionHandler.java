@@ -4,6 +4,7 @@ import com.example.car_service.domain.dto.owner.ErrorDto;
 import com.example.car_service.exception.car.CarBusinessException;
 import com.example.car_service.exception.car.CarConflictException;
 import com.example.car_service.exception.car.CarNotFoundException;
+import com.example.car_service.exception.maintenance.MaintenanceRecordNotFoundException;
 import com.example.car_service.exception.maintenance.ServiceCenterNotFoundException;
 import com.example.car_service.exception.owner.OwnerBusinessException;
 import com.example.car_service.exception.owner.OwnerConflictException;
@@ -69,6 +70,12 @@ public class GlobalExceptionHandler {
         ErrorDto dto = new ErrorDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
 
         return ResponseEntity.status(dto.statusCode()).body(dto);
+    }
+
+    @ExceptionHandler(MaintenanceRecordNotFoundException.class)
+    public ResponseEntity<ErrorDto> handleException(MaintenanceRecordNotFoundException e) {
+        ErrorDto dto = new ErrorDto(HttpStatus.NOT_FOUND.value(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dto);
     }
 
     @ExceptionHandler(ServiceCenterNotFoundException.class)
