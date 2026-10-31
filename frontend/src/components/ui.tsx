@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, AlertCircle, CarFront, LoaderCircle, X } from 'lucide-react';
 import type { Car } from '../data/types';
@@ -29,10 +29,6 @@ export function Dialog({ title, onClose, children, wide = false }: { title: stri
     <div className="dialog-inner"><div className="dialog-heading"><h2>{title}</h2><button type="button" className="icon-button" onClick={onClose} aria-label="Закрыть окно"><X size={23} /></button></div>{children}</div>
   </dialog>;
 }
-export function CarVisual({ car, demo = false }: { car: Car; demo?: boolean }) {
-  const [failed, setFailed] = useState(false);
-  const image = demo ? car.photo ?? null : null;
-  useEffect(() => setFailed(false), [image]);
-  if (image && !failed) return <img className="car-image" src={image} alt={`${car.manufacturer} ${car.model}`} onError={() => setFailed(true)} />;
+export function CarVisual({ car }: { car: Car }) {
   return <div className="car-placeholder" aria-label={`${car.manufacturer} ${car.model}`}><CarFront strokeWidth={1} /><span>{car.manufacturer}</span></div>;
 }

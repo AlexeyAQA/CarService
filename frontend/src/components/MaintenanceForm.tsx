@@ -3,13 +3,12 @@ import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { AlertCircle, ChevronDown, LoaderCircle, Plus, Trash2 } from 'lucide-react';
-import type { AppMode, Car, MaintenanceCreateRequest, ServiceCenter } from '../data/types';
+import type { Car, MaintenanceCreateRequest, ServiceCenter } from '../data/types';
 import './maintenance-form.css';
 
 interface MaintenanceFormProps {
   car: Car;
   centers: ServiceCenter[];
-  mode: AppMode;
   onSubmit: (input: MaintenanceCreateRequest) => Promise<void>;
   onCancel: () => void;
 }
@@ -66,7 +65,7 @@ const formSchema = z.object({
   })).min(1, 'Добавьте хотя бы одну работу или запчасть'),
 }).superRefine((data, context) => {
   if (data.performerType === 'SERVICE_CENTER' && !z.uuid().safeParse(data.serviceCenterId.trim()).success) {
-    context.addIssue({ code: 'custom', path: ['serviceCenterId'], message: 'Укажите сервисный центр с корректным UUID' });
+    context.addIssue({ code: 'custom', path: ['serviceCenterId'], message: 'Выберите сервисный центр' });
   }
 });
 
@@ -76,7 +75,7 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   return message ? <span id={id} className="field-error maintenance-field-error" role="alert">{message}</span> : null;
 }
 
-export function MaintenanceForm({ car, centers, mode, onSubmit, onCancel }: MaintenanceFormProps) {
+export function MaintenanceForm({ car, centers, onSubmit, onCancel }: MaintenanceFormProps) {
   const formId = useId();
   const [expanded, setExpanded] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -229,21 +228,14 @@ export function MaintenanceForm({ car, centers, mode, onSubmit, onCancel }: Main
           <div className="field maintenance-center-field">
             {performer === 'SERVICE_CENTER' ? <>
               <label className="field-label maintenance-center-label" htmlFor={`${formId}-center`}>Сервис</label>
-              {mode === 'demo' ? (
                 <div className="maintenance-select-wrap">
-                  <select className="input" id={`${formId}-center`} {...register('serviceCenterId')}
+                  <select className="input" id={`${formId}-center`} disabled={centers.length === 0} {...register('serviceCenterId')}
                     aria-invalid={Boolean(errors.serviceCenterId)} aria-describedby={errors.serviceCenterId ? `${formId}-center-error` : undefined}>
                     <option value="">Выберите сервисный центр</option>
-                    {centers.map((center) => <option key={center.id} value={center.id}>{center.name}</option>)}
+                    {centers.map((center) => <option key={center.id} value={center.id}>{center.name} · {center.address}</option>)}
                   </select>
                   <ChevronDown size={17} aria-hidden="true" />
                 </div>
-              ) : <>
-                <input className="input" id={`${formId}-center`} placeholder="UUID сервисного центра" autoComplete="off"
-                  aria-invalid={Boolean(errors.serviceCenterId)} aria-describedby={`${formId}-center-help${errors.serviceCenterId ? ` ${formId}-center-error` : ''}`}
-                  {...register('serviceCenterId')} />
-                <p className="maintenance-input-help" id={`${formId}-center-help`}>Введите ID существующего центра. Выбор из списка пока недоступен.</p>
-              </>}
               <FieldError id={`${formId}-center-error`} message={errors.serviceCenterId?.message} />
             </> : <div className="maintenance-self-hint">Сделали сами? Сохраните работы и запчасти — они останутся в истории автомобиля.</div>}
           </div>

@@ -1,4 +1,3 @@
-export type AppMode = 'demo' | 'api';
 export type MaintenanceItemType = 'WORK' | 'PART';
 export type PerformerType = 'SELF' | 'SERVICE_CENTER';
 
@@ -16,9 +15,6 @@ export interface Car extends CarSummary {
   ownerId: string;
   createdAt: string;
   updatedAt: string;
-  /** Display-only demo metadata; not part of the Java API. */
-  photo?: string;
-  nextMaintenance?: { title: string; mileage: number; date: string };
 }
 
 export interface CarCreateRequest {
@@ -91,6 +87,22 @@ export interface MaintenanceRecord extends Omit<MaintenanceCreateRequest, 'items
   totalAmount: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface RecordFilters {
+  q?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  performerType?: PerformerType;
+  serviceCenterId?: string;
+}
+
+export interface RecordPage {
+  records: MaintenanceRecord[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
 }
 
 export interface ServiceCenterCreateRequest {
