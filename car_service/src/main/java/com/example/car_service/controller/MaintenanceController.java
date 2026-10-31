@@ -1,6 +1,8 @@
 package com.example.car_service.controller;
 
 import com.example.car_service.domain.dto.maintenance.MaintenanceRecordCreateRequest;
+import com.example.car_service.domain.dto.maintenance.MaintenanceRecordSearchRequest;
+import com.example.car_service.domain.dto.maintenance.MaintenanceRecordPageResponse;
 import com.example.car_service.domain.dto.maintenance.MaintenanceRecordResponse;
 import com.example.car_service.service.MaintenanceService;
 import jakarta.validation.Valid;
@@ -27,6 +29,27 @@ public class MaintenanceController {
         MaintenanceRecordResponse maintenanceRecordResponse = maintenanceService.create(carId, request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(maintenanceRecordResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<MaintenanceRecordPageResponse> findAllMaintenanceRecordsByCarId(
+            @PathVariable UUID carId,
+            @Valid @ModelAttribute MaintenanceRecordSearchRequest request
+    ) {
+        MaintenanceRecordPageResponse response = maintenanceService.findAllRecordsByCarId(carId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{recordId}")
+    public ResponseEntity<MaintenanceRecordResponse> findMaintenanceRecordById(
+            @PathVariable UUID carId,
+            @PathVariable UUID recordId
+    ) {
+
+        MaintenanceRecordResponse maintenanceRecordResponse = maintenanceService.findRecordById(carId, recordId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(maintenanceRecordResponse);
+
     }
 
 }
