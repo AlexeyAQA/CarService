@@ -80,6 +80,9 @@ export interface MaintenanceCreateRequest {
   items: MaintenanceItemCreateRequest[];
 }
 
+// PUT replaces the complete editable state, including null optional fields.
+export type MaintenanceUpdateRequest = MaintenanceCreateRequest;
+
 export interface MaintenanceRecord extends Omit<MaintenanceCreateRequest, 'items'> {
   id: string;
   carId: string;

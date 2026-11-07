@@ -1,9 +1,6 @@
 package com.example.car_service.service.impl;
 
-import com.example.car_service.domain.dto.maintenance.MaintenanceRecordCreateRequest;
-import com.example.car_service.domain.dto.maintenance.MaintenanceRecordSearchRequest;
-import com.example.car_service.domain.dto.maintenance.MaintenanceRecordPageResponse;
-import com.example.car_service.domain.dto.maintenance.MaintenanceRecordResponse;
+import com.example.car_service.domain.dto.maintenance.*;
 import com.example.car_service.domain.entity.CarEntity;
 import com.example.car_service.domain.entity.MaintenanceItemEntity;
 import com.example.car_service.domain.entity.MaintenanceRecordEntity;
@@ -147,6 +144,46 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                 responsePage.getTotalElements(),
                 responsePage.getTotalPages()
         );
+    }
+
+    @Override
+    @Transactional
+    public MaintenanceRecordResponse update(UUID carId, UUID recordId, MaintenanceRecordUpdateRequest request) {
+
+        carRepository.findByIdAndDeletedAtIsNull(carId)
+                .orElseThrow(() -> new CarNotFoundException(carId));
+
+        MaintenanceRecordEntity recordEntity = maintenanceRepository.findByIdAndCar_Id(recordId, carId)
+                .orElseThrow(() -> new MaintenanceRecordNotFoundException(recordId));
+
+        ServiceCenterEntity serviceCenter = null;
+        if (request.performerType() == PerformerType.SERVICE_CENTER) {
+            serviceCenter = serviceCenterRepository.findById(request.serviceCenterId())
+                    .orElseThrow(() -> new ServiceCenterNotFoundException(request.serviceCenterId()));
+        }
+
+        recordEntity.setServiceDate(request.serviceDate());
+        recordEntity.setMileage(request.mileage());
+        recordEntity.setPerformerType(request.performerType());
+        recordEntity.setDescription(request.description());
+        recordEntity.setServiceCenter(serviceCenter);
+
+        recordEntity.getItems().clear();
+
+        maintenanceRepository.flush();
+
+        for (int i = 0; i < request.items().size(); i++) {
+            MaintenanceItemEntity item = maintenanceItemMapper.toEntity(request.items().get(i));
+            String partNumber = item.getPartNumber();
+            item.setPartNumber(partNumber == null || partNumber.isBlank() ? null : partNumber.strip());
+            item.setPosition(i);
+            item.setMaintenanceRecord(recordEntity);
+            recordEntity.getItems().add(item);
+        }
+
+        maintenanceRepository.flush();
+
+        return toResponse(recordEntity);
     }
 
     private MaintenanceRecordResponse toResponse(MaintenanceRecordEntity record) {

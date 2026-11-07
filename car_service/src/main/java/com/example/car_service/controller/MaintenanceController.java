@@ -4,6 +4,7 @@ import com.example.car_service.domain.dto.maintenance.MaintenanceRecordCreateReq
 import com.example.car_service.domain.dto.maintenance.MaintenanceRecordSearchRequest;
 import com.example.car_service.domain.dto.maintenance.MaintenanceRecordPageResponse;
 import com.example.car_service.domain.dto.maintenance.MaintenanceRecordResponse;
+import com.example.car_service.domain.dto.maintenance.MaintenanceRecordUpdateRequest;
 import com.example.car_service.service.MaintenanceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,16 @@ public class MaintenanceController {
             @Valid @ModelAttribute MaintenanceRecordSearchRequest request
     ) {
         MaintenanceRecordPageResponse response = maintenanceService.findAllRecordsByCarId(carId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{recordId}")
+    public ResponseEntity<MaintenanceRecordResponse> updateMaintenanceRecord(
+            @PathVariable UUID carId,
+            @PathVariable UUID recordId,
+            @Valid @RequestBody MaintenanceRecordUpdateRequest request
+    ) {
+        MaintenanceRecordResponse response = maintenanceService.update(carId, recordId, request);
         return ResponseEntity.ok(response);
     }
 

@@ -36,9 +36,11 @@ public class MaintenanceRecordEntity {
 
     @OneToMany(
             mappedBy = "maintenanceRecord",
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true
     )
     @OrderBy("position ASC")
+    @Builder.Default
     private List<MaintenanceItemEntity> items = new ArrayList<>();
 
     @Column(name = "service_date", nullable = false)

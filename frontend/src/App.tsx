@@ -6,6 +6,7 @@ import { Loading } from './components/ui';
 const Garage = lazy(() => import('./pages/Garage'));
 const CarDetails = lazy(() => import('./pages/CarDetails'));
 const NewRecord = lazy(() => import('./pages/NewRecord'));
+const EditRecord = lazy(() => import('./pages/EditRecord'));
 const RecordDetails = lazy(() => import('./pages/RecordDetails'));
 const Centers = lazy(() => import('./pages/Secondary').then(m => ({ default: m.Centers })));
 const Documents = lazy(() => import('./pages/Secondary').then(m => ({ default: m.Documents })));
@@ -40,5 +41,5 @@ function Layout() {
   </div>;
 }
 export default function App() {
-  return <Routes><Route element={<Layout />}><Route index element={<Navigate to="/cars" replace />} /><Route path="cars" element={<Garage />} /><Route path="cars/:carId" element={<CarDetails />} /><Route path="cars/:carId/records/new" element={<NewRecord />} /><Route path="cars/:carId/records/:recordId" element={<RecordDetails />} /><Route path="history" element={<History />} /><Route path="centers" element={<Centers />} /><Route path="documents" element={<Documents />} /><Route path="settings" element={<Settings />} /><Route path="*" element={<div className="empty-state"><h1>Страница не найдена</h1><p>Возможно, адрес изменился.</p><Link className="button button-primary" to="/cars">Вернуться в гараж</Link></div>} /></Route></Routes>;
+  return <Routes><Route element={<Layout />}><Route index element={<Navigate to="/cars" replace />} /><Route path="cars" element={<Garage />} /><Route path="cars/:carId" element={<CarDetails />} /><Route path="cars/:carId/records/new" element={<NewRecord />} /><Route path="cars/:carId/records/:recordId" element={<RecordDetails />} /><Route path="cars/:carId/records/:recordId/edit" element={<EditRecord />} /><Route path="history" element={<History />} /><Route path="centers" element={<Centers />} /><Route path="documents" element={<Documents />} /><Route path="settings" element={<Settings />} /><Route path="*" element={<div className="empty-state"><h1>Страница не найдена</h1><p>Возможно, адрес изменился.</p><Link className="button button-primary" to="/cars">Вернуться в гараж</Link></div>} /></Route></Routes>;
 }
