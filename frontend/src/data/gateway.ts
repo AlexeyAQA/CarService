@@ -1,6 +1,6 @@
 import type {
   Car, CarCreateRequest, CarFilters, CarPage, CarUpdateRequest,
-  MaintenanceCreateRequest, MaintenanceRecord, Owner, OwnerCreateRequest,
+  MaintenanceCreateRequest, MaintenanceUpdateRequest, MaintenanceRecord, Owner, OwnerCreateRequest,
   RecordFilters, RecordPage, ServiceCenter, ServiceCenterCreateRequest,
 } from './types';
 
@@ -96,6 +96,9 @@ export const gateway = {
   },
   createRecord(carId: string, input: MaintenanceCreateRequest): Promise<MaintenanceRecord> {
     return request(`/cars/${encoded(carId)}/maintenance-records`, 'POST', input);
+  },
+  updateRecord(carId: string, recordId: string, input: MaintenanceUpdateRequest): Promise<MaintenanceRecord> {
+    return request(`/cars/${encoded(carId)}/maintenance-records/${encoded(recordId)}`, 'PUT', input);
   },
   listCenters(): Promise<ServiceCenter[]> { return request('/service-centers'); },
   createCenter(input: ServiceCenterCreateRequest): Promise<ServiceCenter> {

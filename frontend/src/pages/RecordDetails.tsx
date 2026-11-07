@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { CalendarDays, Check, Copy, Gauge, Store } from 'lucide-react';
+import { CalendarDays, Check, Copy, Gauge, Pencil, Store } from 'lucide-react';
 import { useApp } from '../app-context';
 import { gateway } from '../data/gateway';
 
@@ -21,6 +21,6 @@ export default function RecordDetails() {
     <div className="record-facts"><div><CalendarDays size={23} /><span>Дата обслуживания<strong>{date(data.serviceDate)}</strong></span></div><div><Gauge size={23} /><span>Пробег<strong>{number(data.mileage)} км</strong></span></div><div><Store size={23} /><span>Исполнитель<strong>{data.performerType === 'SELF' ? 'Самостоятельно' : center?.name || 'В сервисе'}</strong></span></div></div>
     <section className="record-items-section"><h2>Работы и запчасти</h2><div className="table-scroll"><table className="items-table"><thead><tr><th>Наименование</th><th>Тип</th><th>Номер запчасти · PN</th><th className="align-right">Сумма</th></tr></thead><tbody>{[...data.items].sort((a, b) => a.position - b.position).map(item => <tr key={item.id}><td>{item.name}</td><td><span className={`type-badge ${item.type === 'PART' ? 'type-part' : ''}`}>{item.type === 'WORK' ? 'Работа' : 'Запчасть'}</span></td><td>{item.partNumber ? <span className="part-number">{item.partNumber}<button className="icon-button" aria-label={`Скопировать PN ${item.partNumber}`} onClick={() => void navigator.clipboard.writeText(item.partNumber!).then(() => notify('Номер запчасти скопирован')).catch(() => notify('Не удалось скопировать номер'))}><Copy size={15} /></button></span> : <span className="muted">—</span>}</td><td className="align-right table-amount">{money(item.amount)}</td></tr>)}</tbody></table></div><div className="record-total"><span>Итого</span><strong>{money(data.totalAmount)}</strong></div></section>
     {data.description && <section className="record-comment"><h3>Комментарий</h3><p>{data.description}</p></section>}
-    <div className="form-actions"><Link className="button button-secondary" to={`/cars/${carId}`}>К истории автомобиля</Link></div>
+    <div className="form-actions"><Link className="button button-secondary" to={`/cars/${carId}`}>К истории автомобиля</Link><Link className="button button-primary" to={`/cars/${carId}/records/${recordId}/edit`}><Pencil size={18} />Редактировать</Link></div>
   </div>;
 }

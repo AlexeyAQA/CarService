@@ -3,12 +3,13 @@ import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { AlertCircle, ChevronDown, LoaderCircle, Plus, Trash2 } from 'lucide-react';
-import type { Car, MaintenanceCreateRequest, ServiceCenter } from '../data/types';
+import type { Car, MaintenanceCreateRequest, MaintenanceRecord, ServiceCenter } from '../data/types';
 import './maintenance-form.css';
 
 interface MaintenanceFormProps {
   car: Car;
   centers: ServiceCenter[];
+  initialRecord?: MaintenanceRecord;
   onSubmit: (input: MaintenanceCreateRequest) => Promise<void>;
   onCancel: () => void;
 }
@@ -75,13 +76,25 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   return message ? <span id={id} className="field-error maintenance-field-error" role="alert">{message}</span> : null;
 }
 
-export function MaintenanceForm({ car, centers, onSubmit, onCancel }: MaintenanceFormProps) {
+export function MaintenanceForm({ car, centers, initialRecord, onSubmit, onCancel }: MaintenanceFormProps) {
   const formId = useId();
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(Boolean(initialRecord?.description));
   const [submitError, setSubmitError] = useState<string | null>(null);
   const { register, control, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialRecord ? {
+      serviceDate: initialRecord.serviceDate,
+      mileage: String(initialRecord.mileage),
+      performerType: initialRecord.performerType,
+      serviceCenterId: initialRecord.serviceCenterId ?? '',
+      description: initialRecord.description ?? '',
+      items: [...initialRecord.items].sort((a, b) => a.position - b.position).map(item => ({
+        name: item.name,
+        type: item.type,
+        amount: String(item.amount),
+        partNumber: item.partNumber ?? '',
+      })),
+    } : {
       serviceDate: localToday(),
       mileage: String(car.mileage),
       performerType: 'SELF',
@@ -123,7 +136,7 @@ export function MaintenanceForm({ car, centers, onSubmit, onCancel }: Maintenanc
   });
 
   return (
-    <form className="maintenance-form" onSubmit={submit} noValidate aria-label="Новая запись обслуживания">
+    <form className="maintenance-form" onSubmit={submit} noValidate aria-label={initialRecord ? 'Редактирование записи обслуживания' : 'Новая запись обслуживания'}>
       <fieldset className="maintenance-fields" disabled={isSubmitting}>
         <div className="maintenance-date-mileage">
           <div className="field">
@@ -232,6 +245,8 @@ export function MaintenanceForm({ car, centers, onSubmit, onCancel }: Maintenanc
                   <select className="input" id={`${formId}-center`} disabled={centers.length === 0} {...register('serviceCenterId')}
                     aria-invalid={Boolean(errors.serviceCenterId)} aria-describedby={errors.serviceCenterId ? `${formId}-center-error` : undefined}>
                     <option value="">Выберите сервисный центр</option>
+                    {initialRecord?.serviceCenterId && !centers.some(center => center.id === initialRecord.serviceCenterId) &&
+                      <option value={initialRecord.serviceCenterId}>Текущий сервис (нет в загруженном списке)</option>}
                     {centers.map((center) => <option key={center.id} value={center.id}>{center.name} · {center.address}</option>)}
                   </select>
                   <ChevronDown size={17} aria-hidden="true" />
@@ -267,7 +282,7 @@ export function MaintenanceForm({ car, centers, onSubmit, onCancel }: Maintenanc
           <button className="button button-link maintenance-cancel" type="button" onClick={onCancel}>Отмена</button>
           <button className="button button-primary maintenance-save" type="submit">
             {isSubmitting && <LoaderCircle size={18} className="maintenance-spinner" aria-hidden="true" />}
-            {isSubmitting ? 'Сохраняем…' : 'Сохранить запись'}
+            {isSubmitting ? 'Сохраняем…' : initialRecord ? 'Сохранить изменения' : 'Сохранить запись'}
           </button>
         </div>
       </fieldset>
